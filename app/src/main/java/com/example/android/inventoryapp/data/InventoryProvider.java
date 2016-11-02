@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -136,6 +138,8 @@ public class InventoryProvider extends ContentProvider {
             throw new IllegalArgumentException("Quantity cannot be a negative number");
         }
 
+        byte[] byteArray = values.getAsByteArray(ProductEntry.COLUMN_PIC);
+        Bitmap imageProduct = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
 
 
         // Get writeable database
