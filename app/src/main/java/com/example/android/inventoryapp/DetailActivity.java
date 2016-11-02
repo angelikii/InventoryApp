@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,10 +40,12 @@ public class DetailActivity extends AppCompatActivity implements
     private TextView quantTextView;
     private TextView salesTextView;
     private TextView supplTextView;
+    private ImageView imgImageView;
     String supplmail;
     int price;
     int sales;
     int quant;
+    Bitmap bmpProduct;
 
     private EditText edtOrder;
     private EditText edtShipment;
@@ -171,6 +176,7 @@ public class DetailActivity extends AppCompatActivity implements
             int quantColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_QUANTITY);
             int salesColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_SALES);
             int supplColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_SUPPLIER);
+            int imgColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PIC);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
@@ -178,12 +184,17 @@ public class DetailActivity extends AppCompatActivity implements
             quant = cursor.getInt(quantColumnIndex);
             sales = cursor.getInt(salesColumnIndex);
             supplmail = cursor.getString(supplColumnIndex);
+            byte[] imgProductArray = cursor.getBlob(imgColumnIndex);
+            bmpProduct = BitmapFactory.decodeByteArray(imgProductArray, 0, imgProductArray.length);
+
+
 
             nameTextView = (TextView) findViewById(R.id.product_name_d);
             priceTextView = (TextView) findViewById(R.id.product_price_d);
             quantTextView = (TextView) findViewById(R.id.quantity_value_d);
             salesTextView = (TextView) findViewById(R.id.sales_value_d);
             supplTextView = (TextView) findViewById(R.id.supplier_mail_d);
+            imgImageView = (ImageView) findViewById(R.id.image_profile);
 
             // Update the views on the screen with the values from the database
             // Update the TextViews with the attributes for the current product
@@ -192,6 +203,8 @@ public class DetailActivity extends AppCompatActivity implements
             quantTextView.setText(String.valueOf(quant));
             salesTextView.setText(String.valueOf(sales));
             supplTextView.setText(supplmail);
+            imgImageView.setImageBitmap(bmpProduct);
+
 
         }
 
@@ -204,6 +217,7 @@ public class DetailActivity extends AppCompatActivity implements
         quantTextView.setText("");
         salesTextView.setText("");
         supplTextView.setText("");
+
     }
 
     public boolean saveChangesOnProduct(Uri currentUri, int salesOrShipments, int numOfItems){
