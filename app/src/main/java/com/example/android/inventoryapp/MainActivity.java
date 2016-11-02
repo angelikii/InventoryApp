@@ -48,13 +48,12 @@ public class MainActivity extends AppCompatActivity implements
         productListView.setAdapter(mCursorAdapter);
 
 
-        getLoaderManager().initLoader(PRODUCT_LOADER, null, MainActivity.this); // why loadermanager is the last? in which order are things placed?
 
         // Setup the item click listener
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
+
                 Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
 
                 // form the content URI that represents the clicked item by appending the "id"
@@ -63,11 +62,11 @@ public class MainActivity extends AppCompatActivity implements
                 // Set the URI on the data field of the intent
                 detailIntent.setData(currentProductUri);
 
-                // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(detailIntent);
             }
     });
 
+        getLoaderManager().initLoader(PRODUCT_LOADER, null, MainActivity.this); // why loadermanager is the last? in which order are things placed?
 
     }
 
@@ -79,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRICE,
                 ProductEntry.COLUMN_QUANTITY,
+                ProductEntry.COLUMN_PIC,
                 ProductEntry.COLUMN_SALES};
 
         // This loader will execute the ContentProvider's query method on a background thread

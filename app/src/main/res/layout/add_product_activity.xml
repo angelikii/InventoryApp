@@ -19,7 +19,9 @@
             android:layout_height="140dp"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:background="@color/colorAccent"
+            android:layout_marginEnd="6dp"/>
 
         <EditText
             android:id="@+id/edit_name"

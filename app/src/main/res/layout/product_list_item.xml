@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/product_price"
-                tools:text="Quantity: " />
+                android:text="Quantity: " />
 
             <TextView
                 android:id="@+id/quantity_value"
@@ -69,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/quantity_key"
-                tools:text="Sales: " />
+                android:text="Sales: " />
 
             <TextView
                 android:id="@+id/sales_value"
@@ -79,13 +79,16 @@
                 android:layout_toRightOf="@id/sales_key"
                 tools:text="21" />
 
-        <Button
-            android:id="@+id/button_shipment"
+        <TextView
+            android:id="@+id/button_sale1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:text="+1 Sale"
+            android:padding = "5dp"
+            android:clickable="true"
+            android:background="@color/colorAccent"
             android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"/>
 

@@ -18,6 +18,9 @@
         <activity android:name=".AddActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity android:name=".DetailActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
         <provider
             android:name=".data.InventoryProvider"
             android:authorities="com.example.android.inventoryapp"

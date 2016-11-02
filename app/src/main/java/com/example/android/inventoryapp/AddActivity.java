@@ -1,24 +1,35 @@
 package com.example.android.inventoryapp;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 /**
  * Created by Angeletou on 31/10/2016.
@@ -30,6 +41,7 @@ public class AddActivity extends AppCompatActivity {
     EditText priceEditText;
     EditText quantEditText;
     EditText supplEditText;
+    ImageView imgAddView;
 
     String nameString;
     String priceString;
@@ -38,8 +50,12 @@ public class AddActivity extends AppCompatActivity {
     int priceInt;
     int quantInt;
     Uri newProductUri;
+    Bitmap productImg;
 
     boolean mProductChanged;
+    private Uri mUri;
+
+    private static final int PICK_IMAGE_REQUEST = 0;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -63,6 +79,24 @@ public class AddActivity extends AppCompatActivity {
         priceEditText = (EditText) findViewById(R.id.edit_price);
         quantEditText = (EditText) findViewById(R.id.edit_quantity);
         supplEditText = (EditText) findViewById(R.id.edit_supplier);
+        imgAddView = (ImageView) findViewById(R.id.image_add);
+
+        ViewTreeObserver viewTreeObserver = imgAddView.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                imgAddView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                productImg = getBitmapFromUri(mUri);
+                imgAddView.setImageBitmap(productImg);
+            }
+        });
+
+        imgAddView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openImageSelector();
+            }
+        });
 
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
@@ -146,6 +180,12 @@ public class AddActivity extends AppCompatActivity {
         values.put(ProductEntry.COLUMN_PRICE, priceInt);
         values.put(ProductEntry.COLUMN_QUANTITY, quantInt);
         values.put(ProductEntry.COLUMN_SUPPLIER, supplMail);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        productImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        values.put(ProductEntry.COLUMN_PIC, byteArray);
         values.put(ProductEntry.COLUMN_SALES, 0);
 
         Toast.makeText(this, "contentValue ready!", Toast.LENGTH_SHORT).show();
@@ -164,6 +204,90 @@ public class AddActivity extends AppCompatActivity {
         }
 
     }
+
+    public Bitmap getBitmapFromUri(Uri uri) {
+
+        if (uri == null || uri.toString().isEmpty())
+            return null;
+
+        // Get the dimensions of the View
+        int targetW = imgAddView.getWidth();
+        int targetH = imgAddView.getHeight();
+
+        InputStream input = null;
+        try {
+            input = this.getContentResolver().openInputStream(uri);
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            input = this.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+            return bitmap;
+
+        } catch (FileNotFoundException fne) {
+            Log.e("AddActivity", "Failed to load image.", fne);
+            return null;
+        } catch (Exception e) {
+            Log.e("AddActivity", "Failed to load image.", e);
+            return null;
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ioe) {
+
+            }
+        }
+    }
+
+    public void openImageSelector() {
+        Intent intent;
+
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
+        // If the request code seen here doesn't match, it's the response to some other intent,
+        // and the below code shouldn't run at all.
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
+
+            if (resultData != null) {
+                mUri = resultData.getData();
+                Log.i("AddActivity", "Uri: " + mUri.toString());
+                imgAddView.setImageBitmap(getBitmapFromUri(mUri));
+            }
+        }
+    }
+
 
 
 }

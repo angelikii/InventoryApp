@@ -14,7 +14,14 @@ import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
  * Created by Angeletou on 31/10/2016.
  */
 
-public class ProductCursorAdapter extends CursorAdapter{
+public class ProductCursorAdapter extends CursorAdapter {
+
+View row;
+    String name;
+    int price;
+    int quant;
+    int sales;
+    int saleIsAdded;
 
     public ProductCursorAdapter(Context context, Cursor c) {
         super(context, c, 0 /* flags */);
@@ -23,8 +30,19 @@ public class ProductCursorAdapter extends CursorAdapter{
     /*Makes a new blank list item view. No data is set (or bound) to the views yet.*/
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) { // why newView? we had usually getView here?
+
         // Inflate a list item view using the layout specified in list_item.xml
-        return LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false);
+        row = LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false);
+        TextView sale1Btn = (TextView) row.findViewById(R.id.button_sale1);
+        sale1Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saleIsAdded = 1;
+            }
+        });
+
+        return row;
+
     }
 
     /* This method binds the pet data (in the current row pointed to by cursor) to the given
@@ -45,17 +63,19 @@ public class ProductCursorAdapter extends CursorAdapter{
         int salesColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_SALES);
 
         // Read the attributes from the Cursor for the current product
-        String name = cursor.getString(nameColumnIndex);
-        int price = cursor.getInt(priceColumnIndex);
-        int quant = cursor.getInt(quantColumnIndex);
-        int sales = cursor.getInt(salesColumnIndex);
+         name = cursor.getString(nameColumnIndex);
+        price = cursor.getInt(priceColumnIndex);
+        quant = cursor.getInt(quantColumnIndex);
+       sales = cursor.getInt(salesColumnIndex);
 
 
         // Update the TextViews with the attributes for the current product
         nameTextView.setText(name);
-        priceTextView.setText(price);
-        quantTextView.setText(quant);
-        salesTextView.setText(sales);
+        priceTextView.setText(String.valueOf(price));
+        quantTextView.setText(String.valueOf(quant));
+        salesTextView.setText(String.valueOf(sales));
 
     }
+
+
 }
