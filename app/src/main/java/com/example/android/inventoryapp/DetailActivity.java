@@ -61,8 +61,6 @@ public class DetailActivity extends AppCompatActivity implements
         mCurrentUri = intent.getData();
         getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
 
-        //TODO: setlisteners on the buttons and update the db
-
         Button btnSales = (Button) findViewById(R.id.button_sale);
         Button btnShipment = (Button) findViewById(R.id.button_shipment);
         Button btnOrder = (Button) findViewById(R.id.button_order);
@@ -71,7 +69,7 @@ public class DetailActivity extends AppCompatActivity implements
         edtSales = (EditText) findViewById(R.id.sales_edt);
         edtShipment = (EditText) findViewById(R.id.shipment_edt);
         edtOrder = (EditText) findViewById(R.id.order_edt);
-
+        // setting the listener for the sales button
         btnSales.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -88,7 +86,7 @@ public class DetailActivity extends AppCompatActivity implements
 
             }
         });
-
+        //setting the listener for the shipment button
         btnShipment.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -105,7 +103,7 @@ public class DetailActivity extends AppCompatActivity implements
             }
         });
 
-
+        //setting the listener for the order button leading to a mail application
         btnOrder.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -130,7 +128,7 @@ public class DetailActivity extends AppCompatActivity implements
 
             }
         });
-
+        //setting the listener for the delete button
         btnDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 showDeleteConfirmationDialog();
@@ -246,7 +244,7 @@ public class DetailActivity extends AppCompatActivity implements
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the postivie and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("delete_dialog_msg");
+        builder.setMessage("Do you really want to delete this item?");
         builder.setPositiveButton("delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the pet.
@@ -280,10 +278,10 @@ public class DetailActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then therhe was an error with the delete.
-                Toast.makeText(this, "delete_failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "delete action failed", Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, "delete_successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "delete action successful", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -45,7 +45,7 @@ public class InventoryProvider extends ContentProvider {
 
     Cursor cursor;
     private InventoryDBHelper mDbHelper;
-
+    //this method will be used to determine if the user enters an email in a valid form.
     public static boolean isEmailValid(String email) {
         boolean isValid = false;
 
@@ -127,10 +127,13 @@ public class InventoryProvider extends ContentProvider {
     }
 
     private Uri insertProduct(Uri uri, ContentValues values) {
-        // Check that the name is not null
+
         String name = values.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
         String supplmail = values.getAsString(ProductEntry.COLUMN_SUPPLIER);
+        Integer priceInt = values.getAsInteger(ProductEntry.COLUMN_PRICE);
+        Integer quantInt = values.getAsInteger(ProductEntry.COLUMN_QUANTITY);
 
+        //checking if fields are not null and valid
         if (name == null) {
             throw new IllegalArgumentException("Product requires a name");
         }
@@ -139,16 +142,14 @@ public class InventoryProvider extends ContentProvider {
             throw new IllegalArgumentException("incorrect email address.");
         }
 
-        Integer priceInt = values.getAsInteger(ProductEntry.COLUMN_PRICE);
         if (priceInt != null && priceInt < 0) {
             throw new IllegalArgumentException("Price cannot be a negative number");
         }
-        Integer quantInt = values.getAsInteger(ProductEntry.COLUMN_QUANTITY);
         if (quantInt != null && quantInt < 0) {
             throw new IllegalArgumentException("Quantity cannot be a negative number");
         }
 
-
+        //checking if image was saved
         byte[] byteArray = values.getAsByteArray(ProductEntry.COLUMN_PIC);
         if (byteArray != null) {
             Bitmap imageProduct = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -200,7 +201,6 @@ public class InventoryProvider extends ContentProvider {
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
         // Return the number of rows deleted
         return rowsDeleted;
     }
@@ -212,7 +212,7 @@ public class InventoryProvider extends ContentProvider {
             case PRODUCT:
                 return updateProduct(uri, values, selection, selectionArgs);
             case PRODUCT_ID:
-                // For the PET_ID code, extract out the ID from the URI,
+                // For the PRODUCT_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = ProductEntry._ID + "=?";
@@ -224,8 +224,7 @@ public class InventoryProvider extends ContentProvider {
     }
 
     private int updateProduct(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-        // check that the name value is not null.
+
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_NAME)) {
             String name = values.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
             if (name == null) {
@@ -233,21 +232,20 @@ public class InventoryProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
-        // check that the gender value is valid.
         if (values.containsKey(ProductEntry.COLUMN_PRICE)) {
             //check it's not empty and valid
             int price = values.getAsInteger(ProductEntry.COLUMN_PRICE);
+
         }
 
         if (values.containsKey(ProductEntry.COLUMN_QUANTITY)) {
-            //check it's not empy and valid
             int quant = values.getAsInteger(ProductEntry.COLUMN_QUANTITY);
+
         }
 
         if (values.containsKey(ProductEntry.COLUMN_SALES)) {
-            //check it's not empty and valid
             int sales = values.getAsInteger(ProductEntry.COLUMN_SALES);
+
         }
 
         // If there are no values to update, then don't try to update the database

@@ -58,8 +58,8 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
     private Uri mUri;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) { // why it appears before the onCreate?
-            mProductChanged = true; //how do we know that the user has stopped providing input?
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            mProductChanged = true;
             return false;
         }
     };
@@ -84,7 +84,6 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
         setContentView(R.layout.add_product_activity);
 
         Intent intent = getIntent();
-        //TODO: Take user input and save it in the database
         // Find all relevant views that we will need to read user input from
         nameEditText = (EditText) findViewById(R.id.edit_name);
         priceEditText = (EditText) findViewById(R.id.edit_price);
@@ -99,7 +98,6 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
                 imgAddView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 productImg = getBitmapFromUri(mUri);
                 imgAddView.setImageBitmap(productImg);
-                Log.v("AddActivity", "ok, we set the image");
             }
         });
 
@@ -110,15 +108,6 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
             }
         });
 
-
-        // Setup OnTouchListeners on all the input fields, so we can determine if the user
-        // has touched or modified them. This will let us know if there are unsaved changes
-        // or not, if the user tries to leave the editor without saving.
-
-        nameEditText.setOnTouchListener(mTouchListener);
-        priceEditText.setOnTouchListener(mTouchListener);
-        quantEditText.setOnTouchListener(mTouchListener);
-        supplEditText.setOnTouchListener(mTouchListener);
 
         // Read from input fields
 
@@ -140,13 +129,13 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
                         priceInt = Integer.parseInt(priceString);
                     } catch (NumberFormatException e) {
                         Log.i("", priceString + " is not a number");
-                        Toast.makeText(AddActivity.this, "please in a number for price", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddActivity.this, "please fill in a number for price", Toast.LENGTH_SHORT).show();
                     }
                     try {
                         quantInt = Integer.parseInt(quantString);
                     } catch (NumberFormatException e) {
                         Log.i("", quantString + " is not a number");
-                        Toast.makeText(AddActivity.this, "please in a number for quantity", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddActivity.this, "please fill in a number for quantity", Toast.LENGTH_SHORT).show();
                     }
                     if ((priceInt < 0) || (quantInt < 0)) {
                         Toast.makeText(AddActivity.this, "please fill in positive numbers for quantity and price", Toast.LENGTH_SHORT).show();
@@ -185,7 +174,6 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             boolean a = productImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
             byte[] byteArray = stream.toByteArray();
-
             values.put(ProductEntry.COLUMN_PIC, byteArray);
         }
 

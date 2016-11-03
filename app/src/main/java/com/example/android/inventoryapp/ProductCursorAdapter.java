@@ -38,11 +38,7 @@ public class ProductCursorAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) { // why newView? we had usually getView here?
 
         // Inflate a list item view using the layout specified in list_item.xml
-        row = LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false);
-
-
-
-        return row;
+        return LayoutInflater.from(context).inflate(R.layout.product_list_item, parent, false);
 
     }
 
@@ -91,6 +87,7 @@ public class ProductCursorAdapter extends CursorAdapter {
         sale1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //on click, update the current product
                 ContentValues values = new ContentValues();
                 if (quant - 1 >= 0) {
                     int newQuant = quant - 1;
@@ -113,7 +110,7 @@ public class ProductCursorAdapter extends CursorAdapter {
 
 
         });
-
+        // if product updated, the TextViews will show the new values (?)
         int quantUpdate = cursor.getInt(quantColumnIndex);
         int salesUpdate = cursor.getInt(salesColumnIndex);
         quantTextView.setText(String.valueOf(quantUpdate));
