@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,14 +37,15 @@ import java.util.regex.Pattern;
  * Created by Angeletou on 31/10/2016.
  */
 
-public class AddActivity extends AppCompatActivity {
+public class AddActivity extends AppCompatActivity implements Parcelable {
 
+    private static final String STATE_URI = "STATE_URI";
+    private static final int PICK_IMAGE_REQUEST = 0;
     EditText nameEditText;
     EditText priceEditText;
     EditText quantEditText;
     EditText supplEditText;
     ImageView imgAddView;
-
     String nameString;
     String priceString;
     String quantString;
@@ -51,13 +54,8 @@ public class AddActivity extends AppCompatActivity {
     int quantInt;
     Uri newProductUri;
     Bitmap productImg;
-    private static final String STATE_URI = "STATE_URI";
-
     boolean mProductChanged;
     private Uri mUri;
-
-    private static final int PICK_IMAGE_REQUEST = 0;
-
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) { // why it appears before the onCreate?
@@ -66,7 +64,19 @@ public class AddActivity extends AppCompatActivity {
         }
     };
 
+    public static boolean isEmailValid(String email) {
+        boolean isValid = false;
 
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+        return isValid;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -116,7 +126,7 @@ public class AddActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 // Use trim to eliminate leading or trailing white space
                 nameString = nameEditText.getText().toString().trim();
@@ -129,26 +139,24 @@ public class AddActivity extends AppCompatActivity {
                     try {
                         priceInt = Integer.parseInt(priceString);
                     } catch (NumberFormatException e) {
-                    Log.i("",priceString +" is not a number");
+                        Log.i("", priceString + " is not a number");
                         Toast.makeText(AddActivity.this, "please in a number for price", Toast.LENGTH_SHORT).show();
                     }
                     try {
                         quantInt = Integer.parseInt(quantString);
                     } catch (NumberFormatException e) {
-                        Log.i("",quantString +" is not a number");
+                        Log.i("", quantString + " is not a number");
                         Toast.makeText(AddActivity.this, "please in a number for quantity", Toast.LENGTH_SHORT).show();
                     }
-                    if ((priceInt<0)||(quantInt<0)) {
+                    if ((priceInt < 0) || (quantInt < 0)) {
                         Toast.makeText(AddActivity.this, "please fill in positive numbers for quantity and price", Toast.LENGTH_SHORT).show();
-                    } else if (!isEmailValid(supplMail))
-                    {
+                    } else if (!isEmailValid(supplMail)) {
                         Toast.makeText(AddActivity.this, supplMail + " please fill in a valid email address", Toast.LENGTH_SHORT).show();
                     } else {
                         newProductUri = saveProduct();
                         finish();
                     }
-                }
-                else {
+                } else {
                     Toast.makeText(AddActivity.this, "please fill in all the gaps", Toast.LENGTH_SHORT).show();
 
                 }
@@ -159,21 +167,9 @@ public class AddActivity extends AppCompatActivity {
         //if the user attempts to exit, display a dialog "save or discard?"
 
     }
-    public static boolean isEmailValid(String email) {
-        boolean isValid = false;
-
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-        CharSequence inputStr = email;
-
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(inputStr);
-        if (matcher.matches()) {
-            isValid = true;
-        }
-        return isValid;
-    }
 
     private Uri saveProduct() {
+
 
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
@@ -182,15 +178,17 @@ public class AddActivity extends AppCompatActivity {
         values.put(ProductEntry.COLUMN_PRICE, priceInt);
         values.put(ProductEntry.COLUMN_QUANTITY, quantInt);
         values.put(ProductEntry.COLUMN_SUPPLIER, supplMail);
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        productImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-
-        values.put(ProductEntry.COLUMN_PIC, byteArray);
         values.put(ProductEntry.COLUMN_SALES, 0);
 
-        Toast.makeText(this, "contentValue ready!", Toast.LENGTH_SHORT).show();
+
+        if (productImg != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            boolean a = productImg.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            values.put(ProductEntry.COLUMN_PIC, byteArray);
+        }
+
 
 // This is a NEW product, so insert a new pet into the provider, returning the content URI for the new product.
         Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
@@ -209,8 +207,10 @@ public class AddActivity extends AppCompatActivity {
 
     public Bitmap getBitmapFromUri(Uri uri) {
 
-        if (uri == null || uri.toString().isEmpty())
+        if (uri == null || uri.toString().isEmpty()) {
+            Toast.makeText(AddActivity.this, "uri = null ", Toast.LENGTH_SHORT).show();
             return null;
+        }
 
         // Get the dimensions of the View
         int targetW = imgAddView.getWidth();
@@ -240,6 +240,7 @@ public class AddActivity extends AppCompatActivity {
             input = this.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
             input.close();
+
             return bitmap;
 
         } catch (FileNotFoundException fne) {
@@ -285,7 +286,8 @@ public class AddActivity extends AppCompatActivity {
             if (resultData != null) {
                 mUri = resultData.getData();
                 Log.i("AddActivity", "Uri: " + mUri.toString());
-                imgAddView.setImageBitmap(getBitmapFromUri(mUri));
+                productImg = getBitmapFromUri(mUri);
+                imgAddView.setImageBitmap(productImg);
             }
         }
     }
@@ -309,5 +311,13 @@ public class AddActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+    }
 }

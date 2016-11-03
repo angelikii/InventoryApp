@@ -32,21 +32,22 @@ import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private Uri mCurrentUri;
-    /** Identifier for the pet data loader */
+    /**
+     * Identifier for the pet data loader
+     */
     private static final int EXISTING_PRODUCT_LOADER = 0;
+    String supplmail;
+    int price;
+    int sales;
+    int quant;
+    Bitmap bmpProduct;
+    private Uri mCurrentUri;
     private TextView nameTextView;
     private TextView priceTextView;
     private TextView quantTextView;
     private TextView salesTextView;
     private TextView supplTextView;
     private ImageView imgImageView;
-    String supplmail;
-    int price;
-    int sales;
-    int quant;
-    Bitmap bmpProduct;
-
     private EditText edtOrder;
     private EditText edtShipment;
     private EditText edtSales;
@@ -69,16 +70,16 @@ public class DetailActivity extends AppCompatActivity implements
 
         edtSales = (EditText) findViewById(R.id.sales_edt);
         edtShipment = (EditText) findViewById(R.id.shipment_edt);
-         edtOrder = (EditText) findViewById(R.id.order_edt);
+        edtOrder = (EditText) findViewById(R.id.order_edt);
 
         btnSales.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String salesString = edtSales.getText().toString().trim();
                 if (!TextUtils.isEmpty(salesString)) {
-                   int salesAdded = Integer.parseInt(salesString);
-                   boolean isSaved = saveChangesOnProduct(mCurrentUri, 0, salesAdded);
+                    int salesAdded = Integer.parseInt(salesString);
+                    boolean isSaved = saveChangesOnProduct(mCurrentUri, 0, salesAdded);
                     if (isSaved) {
                         Toast.makeText(DetailActivity.this, "update succeeded.", Toast.LENGTH_SHORT).show();
                     }
@@ -90,7 +91,7 @@ public class DetailActivity extends AppCompatActivity implements
 
         btnShipment.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String shipmentString = edtShipment.getText().toString().trim();
                 if (!TextUtils.isEmpty(shipmentString)) {
@@ -105,10 +106,9 @@ public class DetailActivity extends AppCompatActivity implements
         });
 
 
-
         btnOrder.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String orderString = edtOrder.getText().toString().trim();
 
@@ -117,7 +117,7 @@ public class DetailActivity extends AppCompatActivity implements
                     //send intent to mail application with the mail of the supplier and the subject  xx items to order
                     Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("message/rfc822");
-                    i.putExtra(Intent.EXTRA_EMAIL  , new String [] {supplmail});
+                    i.putExtra(Intent.EXTRA_EMAIL, new String[]{supplmail});
                     i.putExtra(Intent.EXTRA_SUBJECT, orderInt + " items of " + nameTextView.getText().toString() + " to order");
                     try {
                         startActivity(Intent.createChooser(i, "Send mail..."));
@@ -133,7 +133,7 @@ public class DetailActivity extends AppCompatActivity implements
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-             showDeleteConfirmationDialog();
+                showDeleteConfirmationDialog();
             }
 
         });
@@ -185,8 +185,12 @@ public class DetailActivity extends AppCompatActivity implements
             sales = cursor.getInt(salesColumnIndex);
             supplmail = cursor.getString(supplColumnIndex);
             byte[] imgProductArray = cursor.getBlob(imgColumnIndex);
-            bmpProduct = BitmapFactory.decodeByteArray(imgProductArray, 0, imgProductArray.length);
+            if (imgProductArray != null) {
+                bmpProduct = BitmapFactory.decodeByteArray(imgProductArray, 0, imgProductArray.length);
+                imgImageView = (ImageView) findViewById(R.id.image_profile);
+                imgImageView.setImageBitmap(bmpProduct);
 
+            }
 
 
             nameTextView = (TextView) findViewById(R.id.product_name_d);
@@ -194,7 +198,6 @@ public class DetailActivity extends AppCompatActivity implements
             quantTextView = (TextView) findViewById(R.id.quantity_value_d);
             salesTextView = (TextView) findViewById(R.id.sales_value_d);
             supplTextView = (TextView) findViewById(R.id.supplier_mail_d);
-            imgImageView = (ImageView) findViewById(R.id.image_profile);
 
             // Update the views on the screen with the values from the database
             // Update the TextViews with the attributes for the current product
@@ -203,7 +206,6 @@ public class DetailActivity extends AppCompatActivity implements
             quantTextView.setText(String.valueOf(quant));
             salesTextView.setText(String.valueOf(sales));
             supplTextView.setText(supplmail);
-            imgImageView.setImageBitmap(bmpProduct);
 
 
         }
@@ -220,11 +222,11 @@ public class DetailActivity extends AppCompatActivity implements
 
     }
 
-    public boolean saveChangesOnProduct(Uri currentUri, int salesOrShipments, int numOfItems){
+    public boolean saveChangesOnProduct(Uri currentUri, int salesOrShipments, int numOfItems) {
         boolean isUpdated;
         ContentValues values = new ContentValues();
         if (salesOrShipments == 0) {
-            if (quant-numOfItems>=0) {
+            if (quant - numOfItems >= 0) {
                 values.put(ProductEntry.COLUMN_QUANTITY, quant - numOfItems);
                 values.put(ProductEntry.COLUMN_SALES, numOfItems + sales);
             } else {
@@ -234,15 +236,9 @@ public class DetailActivity extends AppCompatActivity implements
             values.put(ProductEntry.COLUMN_QUANTITY, quant + numOfItems);
         }
         int rowsAffected = getContentResolver().update(currentUri, values, null, null);
-        if (rowsAffected == 0) {
-            // If no rows were affected, then there was an error with the update.
-            Toast.makeText(this, "update product failed " + numOfItems + " " + currentUri.toString(), Toast.LENGTH_SHORT).show();
-            isUpdated = false;
-        } else {
-            // Otherwise, the update was successful and we can display a toast.
-            Toast.makeText(this, "update_item_successful", Toast.LENGTH_SHORT).show();
-            isUpdated = true;
-        }
+        if (rowsAffected > 0)
+        { isUpdated = true; } else
+        { isUpdated = false; }
         return isUpdated;
     }
 

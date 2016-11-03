@@ -21,7 +21,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int PRODUCT_LOADER = 0;
 
-    /** Adapter for the ListView */
+    /**
+     * Adapter for the ListView
+     */
     ProductCursorAdapter mCursorAdapter;
 
     @Override
@@ -48,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements
         productListView.setAdapter(mCursorAdapter);
 
 
-
         // Setup the item click listener
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 startActivity(detailIntent);
             }
-    });
+        });
 
         getLoaderManager().initLoader(PRODUCT_LOADER, null, MainActivity.this); // why loadermanager is the last? in which order are things placed?
 

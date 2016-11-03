@@ -23,17 +23,15 @@ import java.util.regex.Pattern;
 
 public class InventoryProvider extends ContentProvider {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = InventoryProvider.class.getSimpleName();
-    Cursor cursor;
-
-
-    /** URI matcher codeS*/
+    /**
+     * URI matcher codeS
+     */
     private static final int PRODUCT = 100;
     private static final int PRODUCT_ID = 101;
-
-
-
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     // Static initializer. This is run the first time anything is called from this class.
@@ -45,7 +43,22 @@ public class InventoryProvider extends ContentProvider {
 
     }
 
+    Cursor cursor;
     private InventoryDBHelper mDbHelper;
+
+    public static boolean isEmailValid(String email) {
+        boolean isValid = false;
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+        return isValid;
+    }
 
     @Override
     public boolean onCreate() {
@@ -64,20 +77,17 @@ public class InventoryProvider extends ContentProvider {
             case PRODUCT:
                 cursor = database.query(ProductEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
-                Log.v("InventoryProvider", "until here ok");
                 break;
             case PRODUCT_ID:
                 selection = ProductEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = database.query(ProductEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
-                Log.v("InventoryProvider", "Product_ID: until here ok");
 
                 break;
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
-        Log.v("InventoryProvider", "got out of the switch");
 
         // Set notification URI on the Cursor,
         // so we know what content URI the Cursor was created for.
@@ -108,7 +118,7 @@ public class InventoryProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCT:
-               return insertProduct(uri, values);
+                return insertProduct(uri, values);
 
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
@@ -138,9 +148,11 @@ public class InventoryProvider extends ContentProvider {
             throw new IllegalArgumentException("Quantity cannot be a negative number");
         }
 
-        byte[] byteArray = values.getAsByteArray(ProductEntry.COLUMN_PIC);
-        Bitmap imageProduct = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
 
+        byte[] byteArray = values.getAsByteArray(ProductEntry.COLUMN_PIC);
+        if (byteArray != null) {
+            Bitmap imageProduct = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        }
 
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -158,21 +170,6 @@ public class InventoryProvider extends ContentProvider {
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
-    }
-
-
-    public static boolean isEmailValid(String email) {
-        boolean isValid = false;
-
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-        CharSequence inputStr = email;
-
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(inputStr);
-        if (matcher.matches()) {
-            isValid = true;
-        }
-        return isValid;
     }
 
     @Override
@@ -219,7 +216,7 @@ public class InventoryProvider extends ContentProvider {
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = ProductEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateProduct(uri, values, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);

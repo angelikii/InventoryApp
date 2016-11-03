@@ -14,15 +14,12 @@ import android.provider.BaseColumns;
 
 public class InventoryContract {
 
-    private InventoryContract() {}
-
     public static final String CONTENT_AUTHORITY = "com.example.android.inventoryapp";
-
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-
     public static final String PATH_INVENTORY = "inventory";
 
-
+    private InventoryContract() {
+    }
 
     /**
      * Inner class that defines constant values for the pets database table.
@@ -41,12 +38,14 @@ public class InventoryContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INVENTORY;
 
-        /** Name of database table*/
+        /**
+         * Name of database table
+         */
         public final static String TABLE_NAME = "product";
 
         public final static String _ID = BaseColumns._ID;
 
-        public final static String COLUMN_PRODUCT_NAME ="name";
+        public final static String COLUMN_PRODUCT_NAME = "name";
 
         public final static String COLUMN_PRICE = "price";
 
