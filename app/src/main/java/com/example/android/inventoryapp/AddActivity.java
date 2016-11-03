@@ -51,6 +51,7 @@ public class AddActivity extends AppCompatActivity {
     int quantInt;
     Uri newProductUri;
     Bitmap productImg;
+    private static final String STATE_URI = "STATE_URI";
 
     boolean mProductChanged;
     private Uri mUri;
@@ -88,6 +89,7 @@ public class AddActivity extends AppCompatActivity {
                 imgAddView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 productImg = getBitmapFromUri(mUri);
                 imgAddView.setImageBitmap(productImg);
+                Log.v("AddActivity", "ok, we set the image");
             }
         });
 
@@ -285,6 +287,24 @@ public class AddActivity extends AppCompatActivity {
                 Log.i("AddActivity", "Uri: " + mUri.toString());
                 imgAddView.setImageBitmap(getBitmapFromUri(mUri));
             }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mUri != null)
+            outState.putString(STATE_URI, mUri.toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(STATE_URI) &&
+                !savedInstanceState.getString(STATE_URI).equals("")) {
+            mUri = Uri.parse(savedInstanceState.getString(STATE_URI));
         }
     }
 
