@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="10dp"
+    android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingTop="10dp">
 
@@ -21,11 +22,13 @@
             android:focusableInTouchMode="false"
             android:scaleType="fitCenter"
             android:background="@color/colorAccent"
-            android:layout_marginEnd="6dp"/>
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="6dp"
+            />
 
         <EditText
             android:id="@+id/edit_name"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:hint="Product name"
             android:textSize="12sp"
@@ -36,17 +39,17 @@
 
         <EditText
             android:id="@+id/edit_price"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_name"
             android:layout_toRightOf="@id/image_add"
-            android:hint="price"
+            android:hint="price (no dec.)"
             android:textSize="12sp"
             />
 
         <EditText
             android:id="@+id/edit_supplier"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_price"
             android:layout_toRightOf="@id/image_add"
@@ -58,7 +61,7 @@
 
         <EditText
             android:id="@+id/edit_quantity"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_supplier"
             android:layout_toRightOf="@id/image_add"

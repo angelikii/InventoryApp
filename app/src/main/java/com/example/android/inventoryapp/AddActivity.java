@@ -194,7 +194,6 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
     public Bitmap getBitmapFromUri(Uri uri) {
 
         if (uri == null || uri.toString().isEmpty()) {
-            Toast.makeText(AddActivity.this, "uri = null ", Toast.LENGTH_SHORT).show();
             return null;
         }
 
