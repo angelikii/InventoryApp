@@ -33,25 +33,14 @@
 
         <TextView
             android:id="@+id/empty_title_text"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:fontFamily="sans-serif-medium"
             android:paddingTop="16dp"
-            android:text="empty_view_title_text"
+            android:text="Please press the pink button to add a product."
             android:textAppearance="?android:textAppearanceMedium"/>
-
-        <TextView
-            android:id="@+id/empty_subtitle_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/empty_title_text"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif"
-            android:paddingTop="8dp"
-            android:text="empty_view_subtitle_text"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="#A2AAB0"/>
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -61,5 +50,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="10dp"
-        android:src="@drawable/ic_add_pet"/>
+        android:src="@drawable/plussign"/>
 </RelativeLayout>
+
+

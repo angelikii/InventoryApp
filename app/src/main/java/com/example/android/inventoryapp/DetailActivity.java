@@ -79,7 +79,7 @@ public class DetailActivity extends AppCompatActivity implements
                     int salesAdded = Integer.parseInt(salesString);
                     boolean isSaved = saveChangesOnProduct(mCurrentUri, 0, salesAdded);
                     if (isSaved) {
-                        Toast.makeText(DetailActivity.this, "update succeeded.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DetailActivity.this, "Changes were saved.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -96,7 +96,7 @@ public class DetailActivity extends AppCompatActivity implements
                     int itemsAdded = Integer.parseInt(shipmentString);
                     boolean isSaved = saveChangesOnProduct(mCurrentUri, 1, itemsAdded);
                     if (isSaved) {
-                        Toast.makeText(DetailActivity.this, "update succeeded.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DetailActivity.this, "Changes were saved.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -190,7 +190,6 @@ public class DetailActivity extends AppCompatActivity implements
 
             }
 
-
             nameTextView = (TextView) findViewById(R.id.product_name_d);
             priceTextView = (TextView) findViewById(R.id.product_price_d);
             quantTextView = (TextView) findViewById(R.id.quantity_value_d);
@@ -278,10 +277,10 @@ public class DetailActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then therhe was an error with the delete.
-                Toast.makeText(this, "delete action failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Delete action failed", Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, "delete action successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Delete action successful", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -178,16 +178,14 @@ public class AddActivity extends AppCompatActivity implements Parcelable {
         }
 
 
-// This is a NEW product, so insert a new pet into the provider, returning the content URI for the new product.
+
         Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
 
         if (newUri == null) {
             // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(AddActivity.this, "insert_pet_failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddActivity.this, " The product could not be added.", Toast.LENGTH_SHORT).show();
             return null;
         } else {
-            // Otherwise, the insertion was successful and we can display a toast.
-            Toast.makeText(AddActivity.this, "insert_pet_successful", Toast.LENGTH_SHORT).show();
             return newUri;
         }
 

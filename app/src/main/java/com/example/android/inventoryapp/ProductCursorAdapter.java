@@ -18,9 +18,7 @@ import android.widget.Toast;
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 
-
 public class ProductCursorAdapter extends CursorAdapter {
-
 
     Context mContext;
     Cursor mCursor;
@@ -53,21 +51,25 @@ public class ProductCursorAdapter extends CursorAdapter {
         mCursor = cursor;
 
         // Find individual views that we want to modify in the list item layout
-       TextView nameTextView = (TextView) view.findViewById(R.id.product_name);
+        TextView nameTextView = (TextView) view.findViewById(R.id.product_name);
         TextView priceTextView = (TextView) view.findViewById(R.id.product_price);
-      final TextView quantTextView = (TextView) view.findViewById(R.id.quantity_value);
+        final TextView quantTextView = (TextView) view.findViewById(R.id.quantity_value);
         final TextView salesTextView = (TextView) view.findViewById(R.id.sales_value);
-       ImageView imgImageView = (ImageView) view.findViewById(R.id.product_thumbnail);
+        ImageView imgImageView = (ImageView) view.findViewById(R.id.product_thumbnail);
 
         // Find the columns of attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
-       int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRICE);
+        int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRICE);
         int quantColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_QUANTITY);
         int salesColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_SALES);
-      int imgColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PIC);
-        final int rowID = cursor.getPosition();
-        Toast.makeText(mContext, "rowID = " + rowID, Toast.LENGTH_SHORT).show();
+        int imgColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PIC);
 
+        // Find the columns of attributes that we're interested in
+        int itemIdIndex = cursor.getColumnIndex(ProductEntry._ID);
+
+
+        // Read the attributes from the Cursor for the current product
+        final int itemId = cursor.getInt(itemIdIndex);
 
         // Read the attributes from the Cursor for the current product
         String name = cursor.getString(nameColumnIndex);
@@ -91,15 +93,12 @@ public class ProductCursorAdapter extends CursorAdapter {
             @Override
             public void onClick(View v) {
                 //on click, update the current product
-                rowsAffected = saleOfAproduct(rowID, quantTextView, salesTextView);
-                Toast.makeText(mContext, "rowID = " + rowID, Toast.LENGTH_SHORT).show();
-
+                rowsAffected = saleOfAproduct(itemId, quantTextView, salesTextView);
                 if (rowsAffected != 0) {
-                    Toast.makeText(mContext, "update happened", Toast.LENGTH_SHORT).show();
                     quantTextView.setText(String.valueOf(newQuant));
                     salesTextView.setText(String.valueOf(newSales));
                 } else {
-                    Toast.makeText(mContext, "update failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Not possible to update.", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -108,26 +107,28 @@ public class ProductCursorAdapter extends CursorAdapter {
 
         });
 
+
     }
 
-    public int saleOfAproduct(int rowId, TextView qTextView,TextView sTextView){
+    public int saleOfAproduct(int rowId, TextView qTextView, TextView sTextView) {
         mCursor.moveToPosition(rowId);
         int oldSales = Integer.parseInt(sTextView.getText().toString());
         int oldQuant = Integer.parseInt(qTextView.getText().toString());
-        Toast.makeText(mContext, oldSales + " " + oldQuant, Toast.LENGTH_SHORT).show();
 
         if (oldQuant > 0) {
             newQuant = oldQuant - 1;
             newSales = oldSales + 1;
+
             ContentValues values = new ContentValues();
             values.put(ProductEntry.COLUMN_QUANTITY, String.valueOf(newQuant));
             values.put(ProductEntry.COLUMN_SALES, String.valueOf(newSales));
             Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, rowId);
+
             rowsAffected = mContext.getContentResolver().update(currentProductUri, values, null, null);
         }
         return rowsAffected;
 
-        }
     }
+}
 
 

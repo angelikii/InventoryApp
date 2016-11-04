@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
                 Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
 
                 // form the content URI that represents the clicked item by appending the "id"
-                Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id); //??
+                Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
                 detailIntent.setData(currentProductUri);
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        getLoaderManager().initLoader(PRODUCT_LOADER, null, MainActivity.this); // why loadermanager is the last? in which order are things placed?
+        getLoaderManager().initLoader(PRODUCT_LOADER, null, MainActivity.this);
 
     }
 
